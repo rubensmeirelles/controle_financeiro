@@ -12,31 +12,97 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Controle Financeiro Pessoal
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>
+          Administrador
+          <q-icon name="account_circle" size="lg"></q-icon>
+        </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
+      :width="250"
+      :breakpoint="500"
       bordered
     >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
+      <q-scroll-area class="fit">
+        <q-list>
+          <q-item-label header>Menu</q-item-label>
+          <q-item clickable @click="$router.push({ path: '/' })" v-ripple>
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-dashboard" />
+            </q-item-section>
+            <q-item-section>Início</q-item-section>
+          </q-item>
 
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
+          <q-item
+            clickable
+            @click="$router.push({ path: '/lancamentos' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-sack-dollar" />
+            </q-item-section>
+            <q-item-section>Lançamentos</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            @click="$router.push({ path: '/categorias' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-list-ol" />
+            </q-item-section>
+            <q-item-section>Categorias</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            @click="$router.push({ path: '/clientes' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-dolly" />
+            </q-item-section>
+            <q-item-section>Clientes</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            @click="$router.push({ path: '/produtos' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-box-open" />
+            </q-item-section>
+            <q-item-section>Produtos</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            @click="$router.push({ path: '/clientes' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-users" />
+            </q-item-section>
+            <q-item-section>Clientes</q-item-section>
+          </q-item>
+
+          <q-separator />
+          <!-- <q-item clickable @click="logout" v-ripple position="bottom">
+            <q-item-section avatar>
+              <q-icon name="logout" />
+            </q-item-section>
+            <q-item-section> Sair </q-item-section>
+          </q-item> -->
+        </q-list>
+      </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
@@ -47,52 +113,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
 
 const leftDrawerOpen = ref(false);
 
