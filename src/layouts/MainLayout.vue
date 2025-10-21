@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="toolbar">
         <q-btn
           flat
           dense
@@ -100,3 +100,11 @@ function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 </script>
+
+<style lang="scss">
+// .toolbar{
+//   color: $orange-10;
+//   background-color: $orange-12
+
+// }
+</style>
