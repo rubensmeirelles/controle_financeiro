@@ -94,7 +94,7 @@
             <q-item-section>Clientes</q-item-section>
           </q-item>
 
-          <q-separator />
+          <!-- <q-separator /> -->
           <!-- <q-item clickable @click="logout" v-ripple position="bottom">
             <q-item-section avatar>
               <q-icon name="logout" />

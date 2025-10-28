@@ -40,6 +40,7 @@ export default {
         });
 
         function cadastrar() {
+            console.log("envio: ",state.value)
             api.post("/add-cliente", state).then((response) => {
                 console.log("cadastro: ",response)
                 if (response.status === 201) {

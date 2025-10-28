@@ -1,8 +1,8 @@
 <template>
-    <q-page class="bg-grey-3 column q-pa-md">
+    <q-page class="column q-pa-md">
         <div class="q-pa-sm">
             <q-table title="Lançamentos" :rows="rows" :columns="columns" row-key="id" :loading="loading"
-                :pagination="configPagination">
+                :pagination="configPagination" class="shadow-3" >
 
                 <template v-slot:body-cell-action="props">
                     <q-td auto-width :props="props">
@@ -23,10 +23,11 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useQuasar } from 'quasar';
+import { date, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import ModalNovoLancamento from './ModalNovoLancamento.vue';
 import { moneyToDB } from 'src/helpers/money';
+import { formatMoney } from 'src/helpers/formats';
 
 defineOptions({
     name: "LancamentoPage",
@@ -55,26 +56,30 @@ const columns: any = [
         name: "conta_id",
         label: "Conta",
         align: "left",
-        field: "conta_id"
+        field: "conta"
     },
     {
         name: "valor_lancamento",
         label: "Valor",
         align: "left",
-        field: "valor_lancamento",
+        field: (row: any) => formatMoney(row.valor_lancamento),
         
     },
     {
-        name: "data_lancamento",
-        label: "Data do lançamento",
+        name: "data_vencimento",
+        label: "Data do vencimento",
         align: "left",
-        field: "data_lancamento"
+        field: (row: any) => {
+            if (!row.data_vencimento) return '';
+            const [ano, mes, dia] = row.data_vencimento.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
     },
     {
         name: "cliente_id",
         label: "Cliente",
         align: "left",
-        field: "cliente_id"
+        field: "nome"
     },
     {
         name: "action",
@@ -117,3 +122,14 @@ function novoLancamento() {
 }
 
 </script>
+
+<style>
+    .bg-main{
+        background-color: #111111;
+    }
+
+    .bg-table{
+        background-color: #191919;
+        color: #f9f9f9;
+    }
+</style>
