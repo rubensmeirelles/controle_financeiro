@@ -14,16 +14,21 @@
                         <q-select v-model="state.tipo_lancamento" :options="options" option-label="nome"
                             label="Tipo *" />
 
-                        <q-input v-model="state.conta_id" label="Conta *" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Conta de lançamento é obrigatório'
-                        ]" />
+                        <!-- <q-input v-model="state.conta_id" label="Conta *" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Conta de lançamento é obrigatório'
+                        ]" /> -->
+
+                        <q-select v-model="state.id" :options="contas" option-value="id" emit-value option-label="conta"
+                            map-options label="Conta
+                             *" />
                     </div>
 
                     <div class="bg-white text-teal">
                         <q-input v-model="state.valor_lancamento" label="Valor *" autofocus lazy-rules
                             :rules="[(val) => (val && val.length > 0) || 'Valor do lançamento é obrigatório']" />
 
-                        <q-input round color="primary" v-model="state.data_vencimento" label="Data *" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Data do vencimento é obrigatório'
-                        ]" />
+                        <q-input round color="primary" mask="##/##/####" v-model="state.data_vencimento" label="Data *"
+                            lazy-rules :rules="[(val) => (val && val.length > 0) || 'Data do vencimento é obrigatório'
+                            ]" />
 
                         <q-select v-model="state.cliente_id" :options="clientes" option-value="id" emit-value
                             option-label="nome" map-options label="Cliente
@@ -52,15 +57,21 @@ export default {
         const $q = useQuasar();
 
         const state = reactive({
+            //lançamentos
             descricao_lancamento: "",
             tipo_lancamento: "",
             conta_id: "",
             valor_lancamento: "",
             data_vencimento: "",
             cliente_id: "",
+
+            //contas
+            id: "",
+            conta: ""
         });
 
         const clientes = ref(null);
+        const contas = ref(null);
 
         const dataVencimentoFormatada = computed(() => {
             return state.data_vencimento ? formatarDataComIntl(state.data_vencimento) : '';
@@ -68,6 +79,9 @@ export default {
 
         onMounted(() => {
             oterCientes();
+            obterContas();
+
+            //console.log(formatarDataComIntl('06/11/2025')); // 2025-11-06 ✅
         })
 
 
@@ -75,7 +89,7 @@ export default {
             const payload = {
                 descricao_lancamento: state.descricao_lancamento,
                 tipo_lancamento: state.tipo_lancamento,
-                conta_id: state.conta_id,
+                conta_id: state.id,
                 valor_lancamento: state.valor_lancamento,
                 data_vencimento: dataVencimentoFormatada.value,
                 cliente_id: state.cliente_id,
@@ -94,7 +108,7 @@ export default {
                         timeout: 3000
                     });
                 } else {
-                    console.log("cadastro: ", response)
+                    //console.log("cadastro: ", response)
                     $q.notify({
                         type: 'negative',
                         message: response.data.message, // ← Mensagem do seu backend
@@ -107,14 +121,28 @@ export default {
 
         async function oterCientes() {
             api.get("/clientes").then(function (response) {
-                console.log("clientes: ", response.data.data);
+                //console.log("clientes: ", response.data.data);
                 clientes.value = response.data.data
+            })
+        }
+
+        async function obterContas() {
+            api.get("/contas").then(function (response) {
+                console.log("contas: ", response.data.data);
+                contas.value = response.data.data
             })
         }
 
         function formatarDataComIntl(data) {
             if (!data) return '';
 
+            // Se está no formato dd/mm/yyyy
+            if (typeof data === 'string' && data.includes('/')) {
+                const [dia, mes, ano] = data.split('/');
+                return `${ano}-${mes}-${dia}`; // yyyy-mm-dd
+            }
+
+            // Se for Date object
             return new Intl.DateTimeFormat('pt-BR', {
                 year: 'numeric',
                 month: '2-digit',
@@ -125,7 +153,6 @@ export default {
                 .reverse()
                 .join('-');
         }
-
 
         return {
             dialogRef,
@@ -139,6 +166,7 @@ export default {
             fullHeight: ref(false),
             options: ["Despesa", "Receita"],
             clientes,
+            contas,
             formatarDataComIntl
         };
     },
