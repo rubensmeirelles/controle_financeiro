@@ -1,9 +1,9 @@
 <template>
     <q-dialog ref="dialogRef" @hide="onDialogHide" v-model="medium">
         <q-card class="bg-dark text-white" style="width: 700px; max-width: 80vw;">
-            <q-form @submit="cadastrar">
+            <q-form @submit="editLancamento">
                 <q-card-section>
-                    <div class="text-h6">Novo Lançamento</div>
+                    <div class="text-h6">Editar Lançamento</div>
                 </q-card-section>
 
                 <q-card-section class="bg-white q-gutter-md">
@@ -14,10 +14,7 @@
                         <q-select v-model="state.tipo_lancamento" :options="options" option-label="nome"
                             label="Tipo *" />
 
-                        <!-- <q-input v-model="state.conta_id" label="Conta *" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Conta de lançamento é obrigatório'
-                        ]" /> -->
-
-                        <q-select v-model="state.id" :options="contas" option-value="id" emit-value option-label="conta"
+                        <q-select v-model="state.conta_id" :options="contas" option-value="id" emit-value option-label="conta"
                             map-options label="Conta
                              *" />
                     </div>
@@ -48,27 +45,31 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useDialogPluginComponent } from 'quasar';
 import { api } from 'src/boot/axios';
-import { useQuasar, date } from 'quasar';
-import { formatarValorParaEnvio } from 'src/helpers/formats';
+import { useQuasar } from 'quasar';
+import { formatarValorParaEnvio, formatarValorParaExibir } from 'src/helpers/formats';
 
 export default {
+    props: { payload: Object },
     emits: [...useDialogPluginComponent.emits],
-    setup() {
+    setup(props) {
         const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent();
         const $q = useQuasar();
 
         const state = reactive({
             //lançamentos
-            descricao_lancamento: "",
-            tipo_lancamento: "",
-            conta_id: "",
-            valor_lancamento: "",
-            data_vencimento: "",
-            cliente_id: "",
+            id: props.payload.id,
+            descricao_lancamento: props.payload.descricao_lancamento,
+            tipo_lancamento: props.payload.tipo_lancamento,
+            conta_id: props.payload.conta_id,
+            conta: props.payload.conta,
+            valor_lancamento: formatarValorParaExibir(props.payload.valor_lancamento),
+            data_vencimento: formatarDataPayloadEdit(props.payload.data_vencimento),
+            cliente_id: props.payload.cliente_id,
+            nome: props.payload.nome,
 
             //contas
-            id: "",
-            conta: ""
+            //id: "",
+            //conta: ""
         });
 
         const clientes = ref(null);
@@ -79,27 +80,28 @@ export default {
         });
 
         onMounted(() => {
-            obterClientes();
+            oterCientes();
             obterContas();
 
             //console.log(formatarDataComIntl('06/11/2025')); // 2025-11-06 ✅
         })
 
 
-        function cadastrar() {
+        function editLancamento() {
             const payload = {
+                id: state.id,
                 descricao_lancamento: state.descricao_lancamento,
                 tipo_lancamento: state.tipo_lancamento,
-                conta_id: state.id,
-                valor_lancamento: formatarValorParaEnvio(state.valor_lancamento),
-                data_vencimento: dataVencimentoFormatada.value,
+                conta_id: state.conta_id,
+                valor_lancamento: state.valor_lancamento,
+                data_vencimento: formatarValorParaEnvio(dataVencimentoFormatada.value),
                 cliente_id: state.cliente_id,
             };
 
-            //console.log("Payload Final para API:", payload);
+            console.log("Payload edição para API:", payload);
 
-            api.post("/add-lancamento", payload).then((response) => {
-                //console.log("cadastro: ", response)
+            api.put("/update-lancamento", payload).then((response) => {
+                console.log("edição: ", response)
                 if (response.status === 201) {
                     onDialogOK();
                     $q.notify({
@@ -108,7 +110,6 @@ export default {
                         position: 'top',
                         timeout: 3000
                     });
-                    obterClientes();
                 } else {
                     //console.log("cadastro: ", response)
                     $q.notify({
@@ -121,7 +122,7 @@ export default {
             });
         }
 
-        async function obterClientes() {
+        async function oterCientes() {
             api.get("/clientes").then(function (response) {
                 //console.log("clientes: ", response.data.data);
                 clientes.value = response.data.data
@@ -156,10 +157,32 @@ export default {
                 .join('-');
         }
 
+        function formatarDataPayloadEdit(data) {
+            if (!data) return '';
+
+            // Se já estiver no formato dd/mm/yyyy, retorna como está
+            if (data.includes('/')) return data;
+
+            // Se vier no formato yyyy-mm-dd, converte para dd/mm/yyyy
+            if (data.includes('-')) {
+                const [ano, mes, dia] = data.split('-');
+                return `${dia}/${mes}/${ano}`;
+            }
+
+            // Caso seja um Date object
+            const d = new Date(data);
+            if (!isNaN(d)) {
+                return d.toLocaleDateString('pt-BR'); // já retorna dd/mm/yyyy
+            }
+
+            return '';
+            }
+
+
         return {
             dialogRef,
             onDialogHide,
-            cadastrar,
+            editLancamento,
             onCancelClick: onDialogCancel,
             state,
             small: ref(false),
@@ -169,7 +192,8 @@ export default {
             options: ["Despesa", "Receita"],
             clientes,
             contas,
-            formatarDataComIntl
+            formatarDataComIntl,
+            formatarDataPayloadEdit
         };
     },
 };

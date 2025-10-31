@@ -6,7 +6,7 @@
 
                 <template v-slot:body-cell-action="props">
                     <q-td auto-width :props="props">
-                        <q-btn clickable dense round color="primary" icon="edit" />
+                        <q-btn clickable dense round color="primary" icon="edit" @click="editLancamento(props.row)" />
                     </q-td>
                 </template>
 
@@ -23,11 +23,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { date, useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import ModalNovoLancamento from './ModalNovoLancamento.vue';
-import { moneyToDB } from 'src/helpers/money';
 import { formatMoney } from 'src/helpers/formats';
+import { useRouter } from 'vue-router';
+import ModalEditLancamento from './ModalEditLancamento.vue';
 
 defineOptions({
     name: "LancamentoPage",
@@ -91,6 +92,7 @@ const columns: any = [
 const $q = useQuasar();
 const rows = ref([]);
 const loading = ref(false);
+const router = useRouter()
 
 const configPagination = {
     page: 1,
@@ -116,6 +118,18 @@ async function getData() {
 function novoLancamento() {
     $q.dialog({
         component: ModalNovoLancamento,        
+    }).onOk(() => {
+        getData();
+    })
+}
+
+function editLancamento(payload: any){
+    console.log("payload edit: ",payload)
+    $q.dialog({
+        component: ModalEditLancamento,
+        componentProps: {
+            payload: payload
+        },
     }).onOk(() => {
         getData();
     })

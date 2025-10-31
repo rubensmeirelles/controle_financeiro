@@ -1,3 +1,20 @@
+function formatarValorParaEnvio(valor) {
+  if (!valor) return 0;
+  // remove pontos de milhar e troca vírgula por ponto
+  return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+}
+
+function formatarValorParaExibir(valor) {
+  if (valor == null || valor === '') return '';
+  const numero = Number(valor);
+  if (isNaN(numero)) return '';
+  return numero.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+
 function formatCNPJ(cnpj) {
     return cnpj
         .replace(/\D/g, "")
@@ -45,4 +62,4 @@ function formatMoney(value) {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-export { formatCNPJ, formatCPF, formatCEP, formatPhone, formatMoney };
+export { formatarValorParaEnvio, formatarValorParaExibir, formatCNPJ, formatCPF, formatCEP, formatPhone, formatMoney };

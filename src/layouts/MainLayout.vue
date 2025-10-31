@@ -67,33 +67,34 @@
             v-ripple
           >
             <q-item-section avatar>
-              <q-icon name="fa-solid fa-dolly" />
-            </q-item-section>
-            <q-item-section>Clientes</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            @click="$router.push({ path: '/produtos' })"
-            v-ripple
-          >
-            <q-item-section avatar>
-              <q-icon name="fa-solid fa-box-open" />
-            </q-item-section>
-            <q-item-section>Produtos</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            @click="$router.push({ path: '/clientes' })"
-            v-ripple
-          >
-            <q-item-section avatar>
               <q-icon name="fa-solid fa-users" />
             </q-item-section>
             <q-item-section>Clientes</q-item-section>
           </q-item>
 
+          <q-item
+            clickable
+            @click="$router.push({ path: '/contas' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-file-invoice-dollar" />
+            </q-item-section>
+            <q-item-section>Contas</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            @click="$router.push({ path: '/cartoes' })"
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="fa-solid fa-credit-card" />
+            </q-item-section>
+            <q-item-section>Cartões</q-item-section>
+          </q-item>
+
+          
           <!-- <q-separator /> -->
           <!-- <q-item clickable @click="logout" v-ripple position="bottom">
             <q-item-section avatar>
